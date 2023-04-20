@@ -1,0 +1,11 @@
+<root>
+	<styles>
+		<include src="file://{resources}/styles/main.scss" />
+	</styles>
+	<scripts>
+		<include src="file://{resources}/scripts/hud/angle-graph.js" />
+	</scripts>
+	<MomHudAngleGraph class="anglegraph" alternateTicks="false">
+		<UICanvas id="AngleGraph" class="anglegraph__canvas" allowDrawing="true" />
+	</MomHudAngleGraph>
+</root>

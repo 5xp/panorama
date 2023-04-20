@@ -1,0 +1,10 @@
+@use '../config' as *;
+
+.anglegraph {
+	horizontal-align: center;
+
+	.anglegraph__canvas {
+		width: 500px;
+		height: 350px;
+	}
+}
