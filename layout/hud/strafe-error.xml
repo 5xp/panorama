@@ -1,0 +1,22 @@
+<root>
+	<styles>
+		<include src="file://{resources}/styles/main.scss" />
+	</styles>
+	<scripts>
+		<include src="file://{resources}/scripts/hud/strafe-error.js" />
+	</scripts>
+	<MomHudStrafeError class="strafe-error" alternateTicks="false">
+		<Panel id="BarWrapper" class="strafe-error__bar-wrapper">
+			<Panel class="strafe-error__background">
+				<Panel id="Container" class="strafe-error__container">
+				</Panel>
+			</Panel>
+		</Panel>
+		<Panel id="AverageArrow">
+			<Image id="AverageArrowIcon" class="arrow" src="file://{images}/hud/cgaz-arrow.svg" textureheight="48" />
+		</Panel>
+		<Panel class="strafe-error__stats">
+			<Label id="Stats" class="strafe-error__stats--lower" />
+		</Panel>
+	</MomHudStrafeError>
+</root>

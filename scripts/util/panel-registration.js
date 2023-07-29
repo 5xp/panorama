@@ -19,6 +19,7 @@ UiToolkitAPI.RegisterHUDPanel2d('MomHudDFJump', 'file://{resources}/layout/hud/d
 UiToolkitAPI.RegisterHUDPanel2d('MomHudJumpStats', 'file://{resources}/layout/hud/jump-stats.xml');
 UiToolkitAPI.RegisterHUDPanel2d('MomHudSpecInfo', 'file://{resources}/layout/hud/spec-info.xml');
 UiToolkitAPI.RegisterHUDPanel2d('MomHudSynchronizer', 'file://{resources}/layout/hud/synchronizer.xml');
+UiToolkitAPI.RegisterHUDPanel2d('MomHudStrafeError', 'file://{resources}/layout/hud/strafe-error.xml');
 
 UiToolkitAPI.RegisterPanel2d('ToastManager', 'file://{resources}/layout/util/toast-manager.xml');
 UiToolkitAPI.RegisterPanel2d('ToastGeneric', 'file://{resources}/layout/modals/toasts/generic.xml');
