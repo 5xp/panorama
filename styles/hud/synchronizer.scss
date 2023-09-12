@@ -5,9 +5,21 @@
 $border-color: rgba(255, 255, 255, 0.3);
 
 .synchronizer {
-	height: 80px;
 	horizontal-align: center;
 	overflow: noclip;
+
+	&__gauge_needle {
+		horizontal-align: center;
+		vertical-align: bottom;
+		transform-origin: 50% 88%;
+	}
+
+	&__green_needle {
+		height: 100%;
+		width: 1px;
+		horizontal-align: center;
+		background-color: rgb(21, 212, 21);
+	}
 
 	&__bar-wrapper {
 		margin-bottom: 32px;

@@ -14,14 +14,18 @@ const DEFAULT_BUFFER_LENGTH = 10;
 const DEFAULT_MIN_SPEED = 200;
 const DEFAULT_SETTING_ON = 1;
 const DEFAULT_SETTING_OFF = 0;
+const GAUGE_DISPLAY_MODE = -1;
 
 class Synchronizer {
 	static panels = {
 		wrapper: $('#BarWrapper'),
+		background: $('#Background'),
 		segments: [$('#Segment0'), $('#Segment1'), $('#Segment2'), $('#Segment3'), $('#Segment4')],
 		container: $('#Container'),
 		needle: $('#Needle'),
-		stats: [$('#StatsUpper'), $('#StatsLower')]
+		stats: [$('#StatsUpper'), $('#StatsLower')],
+		gaugeBackground: $('#GaugeBackground'),
+		gaugeNeedle: $('#GaugeNeedle')
 	};
 
 	static rad2deg = 180 / Math.PI;
@@ -55,10 +59,10 @@ class Synchronizer {
 		if (bValidWishMove && this.getSizeSquared(MomentumPlayerAPI.GetVelocity()) > Math.pow(this.minSpeed, 2)) {
 			this.gainRatioHistory[this.interpFrames - 1] =
 				this.sampleWeight * this.NaNCheck(lastTickStats.speedGain / lastTickStats.idealGain, 0);
-
-			const ratio = this.displayMode > 2 ? 1 - lastTickStats.yawRatio : lastTickStats.yawRatio;
-			this.yawRatioHistory[this.interpFrames - 1] = this.sampleWeight * this.NaNCheck(ratio, 0);
 		}
+
+		const ratio = this.displayMode > 2 ? 1 - lastTickStats.yawRatio : lastTickStats.yawRatio;
+		this.yawRatioHistory[this.interpFrames - 1] = this.sampleWeight * this.NaNCheck(ratio, 0);
 
 		const gainRatio = this.getBufferedSum(this.gainRatioHistory);
 		const yawRatio = this.getBufferedSum(this.yawRatioHistory);
@@ -70,6 +74,14 @@ class Synchronizer {
 		let flow;
 
 		switch (this.displayMode) {
+			case -1: {
+				// "Gauge"
+				let needleRotation = (yawRatio / 2 - 0.5) * 180;
+				needleRotation = Math.min(Math.max(needleRotation, -90), 90);
+				this.panels.gaugeNeedle.style.transform = `rotateZ(${needleRotation.toFixed(3)}deg)`;
+				this.panels.background.style.visibility = 'collapse';
+				break;
+			}
 			case 1: // "Half-width throttle"
 				flow = direction * flip;
 				this.panels.container.style.flowChildren = flow < 0 ? 'left' : 'right';
@@ -237,7 +249,19 @@ class Synchronizer {
 
 	static setDisplayMode(newMode) {
 		this.displayMode = newMode ?? 0;
+
+		this.panels.gaugeBackground.style.visibility = 'collapse';
+		this.panels.gaugeNeedle.style.visibility = 'collapse';
+
 		switch (this.displayMode) {
+			case -1: // "Gauge"
+				for (const segment of this.panels.segments) segment.style.backgroundColor = this.altColor;
+				this.panels.needle.style.visibility = 'collapse';
+				this.panels.wrapper.style.visibility = 'collapse';
+				this.panels.background.style.visibility = 'collapse';
+				this.panels.gaugeBackground.style.visibility = 'visible';
+				this.panels.gaugeNeedle.style.visibility = 'visible';
+				break;
 			case 1: // "Half-width throttle"
 				for (const segment of this.panels.segments) segment.style.backgroundColor = this.altColor;
 				this.panels.needle.style.visibility = 'visible';
@@ -300,7 +324,7 @@ class Synchronizer {
 	}
 
 	static initializeSettings() {
-		this.setDisplayMode(GameInterfaceAPI.GetSettingFloat('mom_hud_synchro_mode'));
+		this.setDisplayMode(GAUGE_DISPLAY_MODE);
 		this.setColorMode(GameInterfaceAPI.GetSettingFloat('mom_hud_synchro_color_enable'));
 		this.setDynamicMode(GameInterfaceAPI.GetSettingFloat('mom_hud_synchro_dynamic_enable'));
 		this.setDirection(GameInterfaceAPI.GetSettingFloat('mom_hud_synchro_flip_enable'));
@@ -313,7 +337,7 @@ class Synchronizer {
 	static {
 		$.RegisterEventHandler('ChaosHudProcessInput', $.GetContextPanel(), this.onUpdate.bind(this));
 
-		$.RegisterForUnhandledEvent('OnSynchroModeChanged', this.setDisplayMode.bind(this));
+		// $.RegisterForUnhandledEvent('OnSynchroModeChanged', this.setDisplayMode.bind(this));
 		$.RegisterForUnhandledEvent('OnSynchroColorModeChanged', this.setColorMode.bind(this));
 		$.RegisterForUnhandledEvent('OnSynchroDynamicModeChanged', this.setDynamicMode.bind(this));
 		$.RegisterForUnhandledEvent('OnSynchroDirectionChanged', this.setDirection.bind(this));

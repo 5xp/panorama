@@ -9,7 +9,12 @@
 	</scripts>
 	<MomHudSynchronizer class="synchronizer" alternateTicks="false">
 		<Panel id="BarWrapper" class="synchronizer__bar-wrapper">
-			<ConVarEnabler class="synchronizer__background" convar="mom_hud_synchro_mode" togglevisibility="true">
+			<Panel id="GaugeContainer" class="synchronizer__gauge_container">
+				<Image id="GaugeBackground" class="synchronizer__gauge" src="file://{images}/hud/gauge-background.png" scaling="stretch-to-cover-preserve-aspect"/>
+				<Panel id="GreenNeedle" class="synchronizer__green_needle" />
+			</Panel>
+			<Image id="GaugeNeedle" class="synchronizer__gauge_needle" src="file://{images}/hud/gauge-needle.svg" textureheight="230" />
+			<ConVarEnabler id="Background" class="synchronizer__background" convar="mom_hud_synchro_mode" togglevisibility="true">
 				<Panel id="Container" class="synchronizer__container">
 					<Panel id="Segment0" class="synchronizer__segment" />
 					<Panel id="Segment1" class="synchronizer__segment" />
