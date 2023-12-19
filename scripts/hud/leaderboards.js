@@ -1,3 +1,6 @@
+const SJ_URL = 'https://www.sourcejump.net';
+const SJ_API_KEY = 'SJPublicAPIKey';
+
 /**
  * Class for the HUD leaderboards panel, which contains the leaderboards and end of run.
  */
@@ -10,7 +13,9 @@ class HudLeaderboards {
 		/** @type {Image} @static */
 		gamemodeImage: $('#HudLeaderboardsGamemodeImage'),
 		/** @type {Panel} @static */
-		credits: $('#HudLeaderboardsMapCredits')
+		credits: $('#HudLeaderboardsMapCredits'),
+		/** @type {Panel} @static */
+		sjwr: $('#HudLeaderboardsSJWR')
 	};
 
 	static {
@@ -33,7 +38,7 @@ class HudLeaderboards {
 		this.panels.endOfRunContainer.AddClass('hud-leaderboards__endofrun--hidden');
 	}
 
-	static setMapData(isOfficial) {
+	static async setMapData(isOfficial) {
 		$.GetContextPanel().SetHasClass('hud-leaderboards--unofficial', !isOfficial);
 
 		const img = GameModeInfoWithNull[GameModeAPI.GetCurrentGameMode()].shortName.toLowerCase();
@@ -46,6 +51,67 @@ class HudLeaderboards {
 			this.setMapStats(mapData);
 			this.setMapAuthorCredits(mapData.credits);
 		}
+
+		if (GameModeAPI.GetCurrentGameMode() === GameMode.BHOP) {
+			const res = await this.retrieveSJWR(MapCacheAPI.GetMapName());
+
+			let data;
+
+			try {
+				// For some reason the response has a null byte at the end
+				data = JSON.parse(res.replaceAll('\0', ''));
+			} catch (error) {
+				$.Warning('Failed to parse SJWR data: ' + error);
+				return;
+			}
+
+			if (!data || !data[0]) return;
+
+			this.setMapSJWR(data[0]);
+		}
+	}
+
+	/**
+	 *
+	 * @param {String} mapName
+	 * @returns an array of record times in ascending time
+	 */
+	static retrieveSJWR(mapName) {
+		const url = `${SJ_URL}/api/records/${mapName}?key=${SJ_API_KEY}`;
+		return new Promise((resolve, reject) => {
+			$.AsyncWebRequest(url, {
+				type: 'GET',
+				complete: (data) =>
+					data.statusText === 'success' ? resolve(data.responseText) : reject(data.statusText)
+			});
+		});
+	}
+
+	static setMapSJWR(data) {
+		this.panels.sjwr.RemoveClass('hud-leaderboards-map-info__sjwr--hidden');
+
+		const namePanel = $.CreatePanel('Label', this.panels.sjwr, '', {
+			text: data.name
+		});
+
+		namePanel.AddClass('hud-leaderboards-map-info__sjwr-name');
+
+		namePanel.SetPanelEvent('oncontextmenu', () => {
+			UiToolkitAPI.ShowSimpleContextMenu('', '', [
+				{
+					label: $.Localize('#Action_ViewOnWebsite'),
+					jsCallback: () => {
+						SteamOverlayAPI.OpenURL(this.getRecordLink(data.id));
+					}
+				}
+			]);
+		});
+
+		const timePanel = $.CreatePanel('Label', this.panels.sjwr, '', {
+			text: ` in ${data.time}`
+		});
+
+		timePanel.AddClass('hud-leaderboards-map-info__sjwr-time-text');
 	}
 
 	static setMapAuthorCredits(credits) {
@@ -100,5 +166,9 @@ class HudLeaderboards {
 	static close() {
 		$.GetContextPanel().forceCloseLeaderboards();
 		return true;
+	}
+
+	static getRecordLink(recordId) {
+		return `${SJ_URL}/records/id/${recordId}`;
 	}
 }

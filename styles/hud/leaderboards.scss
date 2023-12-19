@@ -104,6 +104,24 @@
 		font-size: 48px;
 	}
 
+	&__sjwr {
+		flow-children: right;
+		width: fill-parent-flow(1);
+		margin-right: 8px;
+		overflow: scroll squish;
+
+		& > HorizontalScrollBar {
+			.ScrollThumb {
+				transform: translateY(6px);
+				max-height: 2px;
+			}
+		}
+
+		&--hidden {
+			visibility: collapse;
+		}
+	}
+
 	&__credits {
 		flow-children: right;
 		width: fill-parent-flow(1);
@@ -119,10 +137,20 @@
 		}
 	}
 
+	&__sjwr-first-text,
+	&__sjwr-by-text,
+	&__sjwr-time-text,
+	&__sjwr-name,
 	&__credits-other-text,
 	&__credits-name {
 		@include mixin.font-styles($use-header: true);
 		font-size: 24px;
+	}
+
+	&__sjwr-name {
+		color: $mid-blue;
+		margin-left: 4px;
+		transition: color 0.1s ease-in-out 0s;
 	}
 
 	&__credits-name {

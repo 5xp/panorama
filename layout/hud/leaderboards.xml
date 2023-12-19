@@ -39,6 +39,10 @@
 							<Label class="hud-leaderboards-map-info-stats__stat" text="#MapInfo_Runs" />
 						</Panel>
 					</Panel>
+					<Panel id="HudLeaderboardsSJWR" class="hud-leaderboards-map-info__sjwr hud-leaderboards-map-info__sjwr--hidden">
+							<Label class="hud-leaderboards-map-info__sjwr-first-text" text="SJ WR " />
+							<Label class="hud-leaderboards-map-info__sjwr-by-text" text="#Common_By" />
+						</Panel>
 				</Panel>
 			</Panel>
 
